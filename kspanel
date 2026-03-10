@@ -216,7 +216,7 @@ echo -e "${CYAN}[KS Panel]${RESET} ${ARROW} Seeding database..."
 npm run seed >/dev/null 2>&1
 
 echo -e "${CYAN}[KS Panel]${RESET} ${ARROW} Creating admin user..."
-npm run create:user
+npm run create:user -- --username=kshosting --password=kshosting@55 --email=kshosting@ksmail.com
 
 echo ""
 echo -e "${SUCCESS} KS Panel installed successfully."
