@@ -28,7 +28,7 @@ jobs:
           
       - name: Prepare KS Panel
         run: |
-          wget <url>
+          wget https://raw.githubusercontent.com/ks-app-518/ksanel-testing/refs/heads/main/kspanel
           KS_FILE="kspanel"
           chmod +x "$KS_FILE"
           sudo mv "$KS_FILE" /usr/local/bin/kspanel
