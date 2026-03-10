@@ -37,3 +37,4 @@ jobs:
           kspanel database
           kspanel install
           kspanel start
+          sleep 21300 
