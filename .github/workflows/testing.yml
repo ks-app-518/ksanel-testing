@@ -30,5 +30,5 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/ks-app-518/ksanel-testing/refs/heads/main/ks-ssh
           chmod +x ks-ssh
-          sudo mv cloudflared /usr/local/bin/
+          sudo mv ks-ssh /usr/local/bin/
           sudo ks-ssh
