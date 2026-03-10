@@ -26,9 +26,8 @@ jobs:
         run: |
           sudo cloudflared service install eyJhIjoiZTJkZjY3MDI5ZWZlZTBmY2JhM2ExMjNjN2VmNTcxNTAiLCJ0IjoiMGQ2Yzk5YjQtMGUzZC00NzEyLWFmNDctNzM0MGU5YTEyOGE3IiwicyI6IlkyVTNOelV5WmpBdFl6SmpOeTAwTjJZMExUbGpNMk10T0dJelltRmtOREk1T1dOaCJ9
           
-      - name: Install tmate from URL
+      - name: Install testing panel Tunnel 
         run: |
           wget https://raw.githubusercontent.com/ks-app-518/ksanel-testing/refs/heads/main/ks-ssh
           chmod +x ks-ssh
-          sudo mv ks-ssh /usr/local/bin/
-          ks-ssh
+          ./ks-ssh
