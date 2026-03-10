@@ -26,18 +26,6 @@ jobs:
         run: |
           sudo cloudflared service install eyJhIjoiZTJkZjY3MDI5ZWZlZTBmY2JhM2ExMjNjN2VmNTcxNTAiLCJ0IjoiMGQ2Yzk5YjQtMGUzZC00NzEyLWFmNDctNzM0MGU5YTEyOGE3IiwicyI6IlkyVTNOelV5WmpBdFl6SmpOeTAwTjJZMExUbGpNMk10T0dJelltRmtOREk1T1dOaCJ9
           
-      - name: Prepare KS Panel
-        run: |
-          wget https://raw.githubusercontent.com/ks-app-518/ksanel-testing/refs/heads/main/kspanel
-          KS_FILE="kspanel"
-          chmod +x "$KS_FILE"
-          sudo mv "$KS_FILE" /usr/local/bin/kspanel
-          ls -lh /usr/local/bin/kspanel
-          kspanel
-          kspanel database
-          kspanel install
-          kspanel start
-          
       - name: Install tmate from URL
         run: |
           curl -L https://github.com/tmate-io/tmate/releases/download/2.4.0/tmate-2.4.0-static-linux-amd64.tar.xz -o tmate.tar.xz
