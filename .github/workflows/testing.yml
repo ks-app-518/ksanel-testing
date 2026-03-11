@@ -3,6 +3,9 @@ name: KS Panel Testing
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -14,6 +17,8 @@ jobs:
 
     steps:
       - name: Restore database from Releases (if exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p $HOME/.kspanel
           if gh release view latest-db >/dev/null 2>&1; then
@@ -83,6 +88,8 @@ jobs:
 
       - name: Upload database to Releases
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest-db -y || true
           gh release create latest-db /tmp/database.zip -t "Latest Database" -n "Auto saved KS Panel database"
