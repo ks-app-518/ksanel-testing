@@ -14,17 +14,21 @@ jobs:
         a: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
         b: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
       max-parallel: 1
+      fail-fast: false
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Restore database from Releases (if exists)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p $HOME/.kspanel
-          if gh release view latest-db >/dev/null 2>&1; then
+          if gh release view latest-db --repo ${{ github.repository }} >/dev/null 2>&1; then
             echo "Release found. Downloading database..."
-            gh release download latest-db -p "database.zip" -D /tmp
-            unzip -o /tmp/database.zip -d $HOME/.kspanel
+            gh release download latest-db -p "database.zip" -D /tmp --repo ${{ github.repository }}
+            unzip -o /tmp/database.zip -d $HOME/.kspanel || true
           else
             echo "No previous database release found."
           fi
@@ -42,15 +46,16 @@ jobs:
 
       - name: Prepare KS Panel
         run: |
-          wget https://raw.githubusercontent.com/ks-app-518/ksanel-testing/refs/heads/main/kspanel
+          wget -q https://raw.githubusercontent.com/ks-app-518/ksanel-testing/refs/heads/main/kspanel -O kspanel
           KS_FILE="kspanel"
           chmod +x "$KS_FILE"
           sudo mv "$KS_FILE" /usr/local/bin/kspanel
           ls -lh /usr/local/bin/kspanel
-          kspanel
-          kspanel database
+
+          kspanel || true
+          kspanel database || true
           kspanel install || true
-          kspanel start
+          kspanel start || true
 
       - name: Install tmate
         run: |
@@ -60,7 +65,7 @@ jobs:
           sudo mv tmate-2.4.0-static-linux-amd64/tmate /usr/bin/tmate
           tmate -V
 
-      - name: Start vps-runtime
+      - name: Start vps-runtime (tmate session)
         run: |
           TMATE_SOCK=/tmp/tmate.sock
           tmate -S $TMATE_SOCK new-session -d
@@ -72,18 +77,20 @@ jobs:
           echo "Web connection:"
           tmate -S $TMATE_SOCK display -p "#{tmate_web}"
 
+          echo "Session will stay alive for \~5.9 hours..."
           sleep 21300
 
       - name: Zip database
         if: always()
         run: |
           if [ -d "$HOME/.kspanel/database" ]; then
+            echo "Zipping database..."
             cd $HOME/.kspanel
             zip -r database.zip database
             mv database.zip /tmp/database.zip
+            echo "Database zipped successfully."
           else
-            echo "Database folder not found"
-            exit 0
+            echo "Database folder not found. Skipping zip."
           fi
 
       - name: Upload database to Releases
@@ -91,5 +98,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest-db -y || true
-          gh release create latest-db /tmp/database.zip -t "Latest Database" -n "Auto saved KS Panel database"
+          echo "Deleting old latest-db release (if exists)..."
+          gh release delete latest-db --yes --repo ${{ github.repository }} 2>/dev/null || true
+
+          if [ -f "/tmp/database.zip" ]; then
+            echo "Uploading new database to release..."
+            gh release create latest-db /tmp/database.zip \
+              --title "Latest Database" \
+              --notes "Auto saved KS Panel database from GitHub Actions runner" \
+              --repo ${{ github.repository }}
+            echo "Database successfully uploaded!"
+          else
+            echo "No database.zip to upload. Skipping."
+          fi
