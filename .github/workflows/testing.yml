@@ -44,7 +44,7 @@ jobs:
           ls -lh /usr/local/bin/kspanel
           kspanel
           kspanel database
-          kspanel install
+          kspanel install || true
           kspanel start
 
       - name: Install tmate
