@@ -82,7 +82,7 @@ jobs:
           fi
 
       - name: Upload database to Releases
+        if: always()
         run: |
-          if: always()
           gh release delete latest-db -y || true
           gh release create latest-db /tmp/database.zip -t "Latest Database" -n "Auto saved KS Panel database"
